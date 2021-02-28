@@ -3,7 +3,7 @@
 export const URL = 'https://noita.gamepedia.com/Perks';
 
 export const parser = () => {
-    const processPerks = rows => {
+    const processPerks = (rows) => {
         let result = [];
         rows.forEach((perk) => {
             let perkData = {};
@@ -12,25 +12,21 @@ export const parser = () => {
                 perkData.name = perk.querySelector('td:nth-child(2)').innerText;
                 perkData.message = perk.querySelector('td:nth-child(3)').innerText;
                 perkData.notes = perk.querySelector('td:nth-child(4)').innerText;
-            }
-            catch (exception){
-
-            }
+            } catch (e) {}
 
             if (perkData.name) {
                 result.push(perkData);
             }
-        })
+        });
 
-        return result
-    }
+        return result;
+    };
 
     let normalPerksRows = document.querySelectorAll('.wikitable--normal-perks')[0].querySelectorAll('tbody > tr');
     let betaPerksRows = document.querySelectorAll('.wikitable--normal-perks')[1].querySelectorAll('tbody > tr');
 
+    const normalPerks = processPerks(normalPerksRows);
+    const betaPerks = processPerks(betaPerksRows);
 
-    const normalPerks = processPerks(normalPerksRows)
-    const betaPerks = processPerks(betaPerksRows)
-
-    return {normalPerks, betaPerks};
-}
+    return { normalPerks, betaPerks };
+};
