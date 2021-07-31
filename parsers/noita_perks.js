@@ -1,12 +1,12 @@
 // noita.gamepedia.com
 
-export const URL = 'https://noita.gamepedia.com/Perks';
+export const URL = 'https://noita.fandom.com/wiki/Perks';
 
 export const parser = () => {
     const processPerks = (rows) => {
-        let result = [];
+        const result = [];
         rows.forEach((perk) => {
-            let perkData = {};
+            const perkData = {};
             try {
                 perkData.img = perk.querySelector('td:nth-child(1) img').src;
                 perkData.name = perk.querySelector('td:nth-child(2)').innerText;
@@ -22,11 +22,7 @@ export const parser = () => {
         return result;
     };
 
-    let normalPerksRows = document.querySelectorAll('.wikitable--normal-perks')[0].querySelectorAll('tbody > tr');
-    let betaPerksRows = document.querySelectorAll('.wikitable--normal-perks')[1].querySelectorAll('tbody > tr');
+    const normalPerksRows = document.querySelectorAll('.wikitable--normal-perks')[0].querySelectorAll('tbody > tr');
 
-    const normalPerks = processPerks(normalPerksRows);
-    const betaPerks = processPerks(betaPerksRows);
-
-    return { normalPerks, betaPerks };
+    return processPerks(normalPerksRows);
 };

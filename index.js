@@ -1,35 +1,40 @@
 import { promises } from 'fs';
-import chalk from 'chalk';
-
 import { startBrowser, openPage } from './browser.js';
+import { getParams } from './utils/index.js';
 
-const { writeFile } = promises;
-const log = console.log;
+const { writeFile, mkdir, stat } = promises;
 
 const main = async () => {
-    let file = process.argv[2];
-    if (!file) {
-        log(`
-${chalk.red('specify filename from ./parsers dir')}
-${chalk.red('for example')} ${chalk.black.bgWhite('yarn start -- noita_perks')}
-`);
-        process.exit();
+    let browser = null;
+
+    try {
+        await stat('results').catch(() => mkdir('results'));
+
+        const { URL, parser, resultFilename, enableRepl, headless, screenshot, blockedResources } = await getParams();
+        browser = await startBrowser({ headless });
+
+        const page = await openPage(browser, URL, { blockedResources });
+
+        if (screenshot)
+            await page.screenshot({
+                path: `results/${resultFilename.replace('.json', '.png')}`,
+                fullPage: true,
+            });
+
+        if (enableRepl) {
+            await page.repl();
+            await browser.repl();
+        }
+
+        const data = await page.evaluate(parser);
+        await writeFile(`results/${resultFilename}`, JSON.stringify(data, null, 3));
+    } catch (error) {
+        console.log(error);
+    } finally {
+        if (browser !== null) {
+            await browser.close();
+        }
     }
-    if (!/.+\.js/.test(file)) {
-        file += '.js';
-    }
-    const { URL, parser } = await import(`./parsers/${file}`);
-
-    const browser = await startBrowser();
-
-    const page = await openPage(browser, URL);
-    // await page.screenshot({ path: 'test.png' });
-
-    let data = await page.evaluate(parser);
-
-    await writeFile('result.json', JSON.stringify(data, null, 3));
-
-    await browser.close();
 };
 
 main();
