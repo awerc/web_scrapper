@@ -1,6 +1,6 @@
-// noita.gamepedia.com
+// noita.wiki.gg
 
-export const URL = 'https://noita.fandom.com/wiki/Perks';
+export const URL = 'https://noita.wiki.gg/wiki/Perks';
 
 export const parser = () => {
     const processPerks = (rows) => {
